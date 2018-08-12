@@ -23,34 +23,38 @@ const simplePriorityQueue = ({ comparator = defaultComparator } = {}) => {
   const pop = () => {
     const firstElement = heap[1];
 
-    if (firstElement) {
+    if (typeof firstElement !== 'undefined') {
       let elementIndex = 1;
       const newFirstElement = heap.pop();
-      const heapMaxIndex = heap.length - 1;
-      heap[elementIndex] = newFirstElement;
+      const heapMaxIndex = heap.length;
 
-      const leftChildIndex = getLeftChildIndex(elementIndex);
-      const rightChildIndex = getRightChildIndex(elementIndex);
+      if (heapMaxIndex !== elementIndex) {
+        heap[elementIndex] = newFirstElement;
 
-      const leftChild = heap[leftChildIndex];
-      const rightChild = heap[rightChildIndex];
+        let leftChildIndex = getLeftChildIndex(elementIndex);
+        let rightChildIndex = getRightChildIndex(elementIndex);
 
-      let largerChildIndex = comparator(leftChild, rightChild) ? rightChildIndex : leftChildIndex;
-      const largerChild = comparator(leftChild, rightChild) ? rightChild : leftChild;
+        let leftChild = heap[leftChildIndex];
+        let rightChild = heap[rightChildIndex];
 
-      while (comparator(largerChild, newFirstElement) && elementIndex < heapMaxIndex) {
-        swap({
-          fromIndex: elementIndex,
-          toIndex: largerChildIndex
-        });
-        elementIndex = largerChildIndex;
-        const leftChildIndex = getLeftChildIndex(elementIndex);
-        const rightChildIndex = getRightChildIndex(elementIndex);
+        let largerChildIndex = comparator(leftChild, rightChild) ? rightChildIndex : leftChildIndex;
+        let largerChild = heap[largerChildIndex];
 
-        const leftChild = heap[leftChildIndex];
-        const rightChild = heap[rightChildIndex];
+        while (comparator(newFirstElement, largerChild) && elementIndex < heapMaxIndex) {
+          swap({
+            fromIndex: elementIndex,
+            toIndex: largerChildIndex,
+          });
+          elementIndex = largerChildIndex;
+          leftChildIndex = getLeftChildIndex(elementIndex);
+          rightChildIndex = getRightChildIndex(elementIndex);
 
-        largerChildIndex = comparator(leftChild, rightChild) ? rightChildIndex : leftChildIndex;
+          leftChild = heap[leftChildIndex];
+          rightChild = heap[rightChildIndex];
+
+          largerChildIndex = comparator(leftChild, rightChild) ? rightChildIndex : leftChildIndex;
+          largerChild = heap[largerChildIndex];
+        }
       }
     }
 
@@ -75,6 +79,8 @@ const simplePriorityQueue = ({ comparator = defaultComparator } = {}) => {
 
   return {
     add,
+    pop,
+    peek,
     toString,
   };
 };
